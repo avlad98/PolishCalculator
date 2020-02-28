@@ -1,0 +1,92 @@
+/*VLAD Andrei-Alexandru - 311CB*/
+
+
+								===	TEMA 3 ===
+
+
+	Programul are ca scop evaluarea expresiilor matematice dintr-un fisier
+de intrare.
+
+=== tema3.c (main) ===
+	In vederea realizarii acestei teme am deschis 2 fisiere (inputul si outputul)
+pe baza argumentelor date in linia de comanda la executia programului.
+	
+	In main citesc datele de intrare cu getline si strtok pentru a delimita
+informatiile de pe fiecare linie. 
+	Pentru a stoca asignarile am folosit o lista generica simplu inlantuita
+care contine pointer catre structuri in care retin numele variabilei si valoarea sa
+	Cand ajung la expresii, pasez linia citita cu getline unei functii "ConstrArbExpr"
+care returneaza un arbore de expresie. Apoi cu functia "rezolva" rezolv arborele de
+expresie si scriu in fisier rezultatul pentru fiecare expresie. La final distrug
+arborele.
+	La finalul main-ului distrul lista generica, eliberez zona de memorie folosita
+de buffer in functia getline si inchid fisierele input si output.
+
+=== arbore.c ===
+	Fisierul sursa "arbore.c" contine functiile:
+	
+	- "ConstrFr" care construieste un nod si insereaza in campul info informatia
+	data ca parametru si seteaza fii stang si drept cu NULL. Functia returneaza
+	nodul creat.
+
+	- "InitArb" introduce intr-un arbore vid un nod
+
+	- "ConstrArbExpr" - aceasta functie construieste nodul principal (presupunand
+	ca primul string citit din expresie este semn de operatie) si insereaza la stanga
+	si la dreapta restul subarborilor de expresie apeland o functie recursiva 
+	"SubArbExpr"
+
+	- "SubArbExpr" - returneaza un subarbore care contine restul arborelui de expresie.
+	Functia verifica informatia citita: daca este semn se apeleaza pe sine pentru 
+	fiul stang si doar daca semnul nu este radical se apeleaza si pe dreapta.
+	Daca informatia nu este semn (este ori asignare, ori valoare numerica) se construieste
+	o frunza cu informatia alocata dinamic (un string care contine numele variabilei sau 
+	valoarea numerica).
+
+	- "RSD" - functia de la laborator. Am folosit-o sa ma verific pentru corectitudinea
+	intializarii arborelui de expresie
+
+	- "DistrugeArb" - Functia recursiva de la curs - elibereaza memoria folosita pentru
+	campul informatie si nodul in sine pentru toti fii stangi si drepti.
+
+=== evaluari.c ===
+	- "WhatIs" - primeste un string si returneaza un cod pentru fiecare operator.
+	Daca nu este operator se intoarce -1.
+
+	- "isOperand" - verifica daca stringul este operator sau nu pe baza rezultatului
+	intors de functia de deasupra.
+
+	- "ConstrInfo" - aloca dinamic informatia (numele variabilei, valoarea numerica sau
+	operatorul)
+
+	- "calculeaza" - aplica operatia pe cele 2 variabile date ca parametru.
+	Daca se imparte la 0 sau se vrea evaluarea lui radical(ceva negativ) se modifica
+	acel "ok" in -1 care este verificat in functii. La final se scrie in fisier rezultatul
+	sau eroarea data de "ok".
+
+	- "giveValue" - intoarce intregul din string-ul valorii numerice sau valoarea variabilei.
+	La fel si aici, "ok" va deveni 0 daca variabila nu exista. Daca valoarea nu exista, mesajul
+	de eroare va fi scris din aceasta functie, nu din functia rezolva.
+
+	- "solve" - functie recursiva care rezolva pe stanga si pe dreapta arborele de expresie.
+	Functia intoarce rezultatul obtinut indiferent de validitatea expresiei, dar se va scrie
+	in fisier rezultatul doar daca ok == 1 (expresia este valida). Pentru celelalte coduri 
+	de ok se va scrie ce am mentionat mai sus.
+
+	- "rezolva" - este doar un apel al functiei solve in care se verifica daca arborele e
+	valid si scrie in fisier rezultatul daca ok == 1 sau "Invalid expression" daca ok == -1.
+	Pentru cazul in care variabila nu exista am mentionat mai sus in functia "giveValue" ce
+	se va intampla.
+
+
+=== lista.c ===
+	Acest fisier contine functiile de baza folosite si la celelalte teme:
+	"AlocaCelula", "DistrugeLG" si "IntrodLG". Pe langa acestea mai este si functia
+	"InitAsign" care intoarce un pointer catre o structura alocata dinamic cu
+	numele si valoarea variabilei citita din fisierul de input.
+
+=== tema3.h ===
+	Acest fisier contine headerele principale, typedef-urile pentru celula, asignare si arbore
+	+ declararile functiilor din cele 3 fisiere (arbore.c, evaluari.c, lista.c)
+
+	Pe masina locala si pe vmchecker obtin 105 puncte (si valgrind-ul). Nu am warning-uri.
